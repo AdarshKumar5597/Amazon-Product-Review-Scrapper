@@ -1,22 +1,55 @@
 from bs4 import BeautifulSoup as bs
 import os
+
 import pagedeleter as pd
 import filedownloader as fd
 import logging
 logging.basicConfig(filename="scrapper.log", level=logging.INFO)
 
+import os
+
+def create_directory(directory):
+    """
+    Function to create a directory if it doesn't already exist.
+
+    Parameters:
+    - directory: The path of the directory to create.
+
+    Returns:
+    None
+    """
+
+    try:
+        os.makedirs(directory, exist_ok=True)
+        print(f"Directory '{directory}' created.")
+    except OSError as e:
+        if e.errno == 13:
+            print(f"Permission denied: You do not have permission to create a directory at '{directory}'.")
+        else:
+            print(f"An error occurred while creating the directory: {e}.")
+
+
+
 def wholeReviewProcess(searchString):
     amazon_url = "https://www.amazon.in/s?k=" + searchString
-    download_folder = 'C:\\Users\\KIIT\\Documents\\PYTHON\\WEB SCRAPPING\\savedWEBpages\\'
-    download_temp_folder = 'C:\\Users\\KIIT\\Documents\\PYTHON\\WEB SCRAPPING\\savedResultpages\\'
+    # download_folder = 'C:\\Users\\KIIT\\Documents\\PYTHON\\WEB SCRAPPING\\savedWEBpages\\'
+    download_folder =  os.path.join(os.path.abspath(os.getcwd()), "webScrapping", "savedResultPages")
+    # download_temp_folder = 'C:\\Users\\KIIT\\Documents\\PYTHON\\WEB SCRAPPING\\savedResultpages\\'
+    download_temp_folder =  os.path.join(os.path.abspath(os.getcwd()), "webScrapping", "savedResultPages")
 
-    pd.deletepage(download_folder)
+    create_directory(download_folder)
+    downloaded_files_path = []
 
-    if (len(os.listdir(download_folder)) == 0):
-        fd.downloadWebpage(amazon_url, download_folder)
+    # pd.deletepage(download_folder)
 
-    amazon_page = os.listdir(download_folder)
-    amazon_html = download_folder + amazon_page[0]
+    # if (len(os.listdir(download_folder)) == 0):
+    #     fd.downloadWebpage(amazon_url, download_folder)
+    
+    amazon_html = fd.downloadWebpage(amazon_url, download_folder)
+    downloaded_files_path.append(amazon_html)
+
+    # amazon_page = os.listdir(download_folder)
+    # amazon_html = download_folder + amazon_page[0]
 
     with open (amazon_html, 'r', encoding="utf8") as f:
         html_content = f.read()
@@ -55,17 +88,19 @@ def wholeReviewProcess(searchString):
     reviews = []
         
     for index, product_link in enumerate(product_link_list):
-        pd.deletepage(download_temp_folder)
+        # pd.deletepage(download_temp_folder)
 
         print(index ,"------> : ", product_link)
-        if (len(os.listdir(download_temp_folder)) == 0):
-            fd.downloadWebpage(product_link, download_temp_folder)
+        # if (len(os.listdir(download_temp_folder)) == 0):
+        #     fd.downloadWebpage(product_link, download_temp_folder)
+
             
+        # product_page = os.listdir(download_temp_folder)
+        # product_html = download_temp_folder + product_page[0]
+        product_html= fd.downloadWebpage(product_link, download_temp_folder)
+        downloaded_files_path.append(product_html)
 
-        product_page = os.listdir(download_temp_folder)
-        product_html = download_temp_folder + product_page[0]
-
-        with open (product_html, 'r', encoding="utf8") as f:
+        with open (product_html, 'r', encoding="utf8") as f:  
             html_content = f.read()
         f.close()
 
@@ -99,9 +134,11 @@ def wholeReviewProcess(searchString):
             except Exception as e:
                 logging.info(e)
     try:
-        a = pd.deletepage(download_folder)
-        b = pd.deletepage(download_temp_folder)
-        logging.info(a + "\n" + b)
+        # a = pd.deletepage(download_folder)
+        # b = pd.deletepage(download_temp_folder)
+        a = pd.delete_files(downloaded_files_path)
+        # b = pd.delete_files()
+        logging.info(a)
     except Exception as e:
         logging.info(e)
     return(reviews)
