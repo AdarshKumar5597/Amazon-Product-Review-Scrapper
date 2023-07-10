@@ -33,6 +33,7 @@ def index():
             return render_template("review-page.html", reviews = amazonReviewResult[0:len(amazonReviewResult)-1])
         except Exception as e:
             main.logging.info(e)
+            return render_template("serverError.html")
     else:
         return render_template("search.html")
     
