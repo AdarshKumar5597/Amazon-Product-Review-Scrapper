@@ -3,7 +3,6 @@ import codecs
 import os
 from selenium.webdriver.chrome.service import Service
 import subprocess
-import requests
 import hashlib
 import datetime
 
@@ -48,9 +47,6 @@ def downloadWebpage(url, download_folder):
 
     return output_file
 
-# headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'}
-
-
 def generate_unique_hash(text):
     """
     Function to generate a unique hash based on the given text and current time.
@@ -91,7 +87,9 @@ def download_webpage(url, download_folder=""):
         current_os = os.name
         if current_os == 'nt':
             print("Operating system: Windows")
-            result = subprocess.run(["Start-BitsTransfer", "-Source", download_webpage, "-Destination", os.path.join(download_folder, output_file)], capture_output=True, text=True, check=True)
+            ps_command = f"Start-BitsTransfer -Source {url} -Destination {os.path.join(download_folder, output_file)}"
+            result = subprocess.run(["powershell", "-Command", ps_command], capture_output=True, text=True, check=True)
+            print(result)
         elif current_os == 'posix':
             print("Operating system: Unix/Linux")
             result = subprocess.run(["wget", "-P", download_folder, url, "-O", output_file], capture_output=True, text=True, check=True)
