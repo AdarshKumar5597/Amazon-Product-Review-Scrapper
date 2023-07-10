@@ -55,7 +55,7 @@ Contributions to this project are welcome! If you encounter any issues or have s
 
 ## License
 
-This project is licensed under the AGPL License.
+This project is licensed under the [AGPL License](LICENSE) - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
